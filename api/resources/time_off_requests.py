@@ -14,12 +14,16 @@ class TimeoffRequestException(Exception):
 class TimeoffRequestAPI(Resource):
 
     def get(self):
+        LOG.info("GET")
+        LOG.info(dir(request))
         time_off_request = request.get_json()
         LOG.info(time_off_request)
         version = {"app": "beanbot", "version": "0.1.1", "time_off_request": order}
         return Response(version, mimetype="application/json", status=200)
 
     def post(self):
+        LOG.info("POST")
+        LOG.info(dir(request))
         time_off_request = request.get_json()
         LOG.info(time_off_request)
         version = {"app": "beanbot", "version": "0.1.1"}

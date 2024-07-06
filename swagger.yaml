@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Beanbot
+  description: An API for interacting with third party apps
+
+servers:
+  - url: http://beanbot/v1/beanbot
+
+
+paths:
+  /slack:
+    post:
+      description: Post payload from Slack API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Slack'
+
+      responses:
+        '200':
+          description: Successfully received payload
+
+        '400':
+          $ref: '#/components/responses/400Error'
+
+
+          $ref: '#/components/responses/400Error'
+
+components:
+  schemas:
+    Slack:
+      type: object
+
+  responses:
+    400Error:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string

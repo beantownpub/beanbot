@@ -1,0 +1,40 @@
+appName: beanbot
+nameOverride:
+fullnameOverride:
+global:
+  env: dev
+image:
+  name:
+  repository: jalgraves/beanbot
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+containerPort: 5007
+
+ingress:
+  enabled: false
+
+logLevel: INFO
+database:
+  enabled: false
+
+regionCode: use2
+replicaCount: 1
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    memory: 350Mi
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+

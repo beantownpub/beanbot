@@ -1,0 +1,9 @@
+apiVersion: v2
+name: beanbot
+description: Beanbot deployment
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+sources:
+- https://github.com/beantownpub/beanbot
+

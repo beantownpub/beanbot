@@ -1,0 +1,134 @@
+version: 2.1
+executors:
+  debian:
+    docker:
+    - image: cimg/python:3.7
+  node:
+    docker:
+      - image: cimg/node:18.16.0
+
+commands:
+  install_yq:
+    description: Install yq to get API version from swagger.yaml
+    steps:
+      - run:
+          name: Install yq
+          command: |
+            sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+            sudo chmod a+x /usr/local/bin/yq
+  install_version_dependencies:
+    description: Install dependencies for versioning
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update -y && apt-get install -y wget git
+            wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+            chmod a+x /usr/local/bin/yq
+  install_pytest:
+    description: Install pytest for running tests
+    steps:
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements.txt
+  install_k8s_dependencies:
+    description: Install dependencies for deploying to K8s cluster
+    steps:
+      - run:
+          name: Install kubectl
+          command: |
+            sudo apt-get update -y && sudo apt-get install -y curl
+            sudo curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+            kubectl config set-credentials jalbot --token=$JALBOT_TOKEN
+            kubectl config set-cluster prod --server=$K8S_SERVER --insecure-skip-tls-verify=true
+            kubectl config set-context jalbot --cluster=prod --user=jalbot
+            kubectl config use-context jalbot
+      - run:
+          name: Install helm
+          command: |
+            sudo apt-get install apt-transport-https gnupg2 --yes
+            sudo curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+            sudo echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+            sudo apt-get update
+            sudo apt-get install -y helm
+  check_tags:
+    description: Check if git tag matches swagger.yaml version
+    steps:
+      - run:
+          name: Check tags
+          command: |
+            BEANBOT_VERSION=$(yq eval '.info.version' swagger.yaml)
+            GIT_TAG=$(git describe)
+            if [ "$BEANBOT_VERSION" != "$GIT_TAG" ]; then
+                circleci-agent step halt
+            fi
+
+jobs:
+  run_tests:
+    executor: debian
+    steps:
+      - checkout
+      - install_pytest
+      - run:
+          name: Run tests
+          command: python -m pytest test/
+
+  build_and_publish:
+    executor: debian
+    steps:
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
+      - checkout
+      - install_yq
+      - run:
+          name: Build Image
+          command: |
+            export BEANBOT_VERSION=$(yq eval '.info.version' swagger.yaml)
+            docker build -t beanbot:$BEANBOT_VERSION .
+      - check_tags
+      - run:
+          name: Publish Image
+          command: |
+            export BEANBOT_VERSION=$(yq eval '.info.version' swagger.yaml)
+            echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_USERNAME --password-stdin
+            docker tag beanbot:$BEANBOT_VERSION $DOCKER_USERNAME/beanbot:$BEANBOT_VERSION
+            docker push $DOCKER_USERNAME/beanbot:$BEANBOT_VERSION
+
+  deploy:
+    executor: debian
+    steps:
+      - checkout
+      - install_version_dependencies
+      - check_tags
+      - install_k8s_dependencies
+      - run:
+          name: Add Helm repo
+          command: |
+            helm repo add beantown $HELM_REPO
+            kubectl config get-contexts
+            kubectl get pods -n prod
+      - run:
+          name: Deploy contact-api
+          command: |
+            export BEANBOT_VERSION=$(yq eval '.info.version' swagger.yaml)
+            helm repo update
+            helm upgrade --install contact-api beantown/contact-api \
+              --namespace prod \
+              --set global.env=prod \
+              --set image.tag=$BEANBOT_VERSION \
+              --set logLevel=$LOG_LEVEL \
+              --debug
+
+
+workflows:
+  on-commit:
+    jobs:
+      - run_tests
+      - build_and_publish:
+          requires:
+            - run_tests
+      - deploy:
+          requires:
+            - build_and_publish

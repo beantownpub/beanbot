@@ -1,0 +1,9 @@
+boto3
+flask
+flask-cors
+flask-httpauth
+flask-restful
+gunicorn
+pytz
+pytest
+requests

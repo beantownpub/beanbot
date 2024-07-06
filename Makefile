@@ -15,6 +15,7 @@ port ?= 5012
 repo ?= jalgraves
 tag ?= $(shell yq eval '.info.version' swagger.yaml)
 hash = $(shell git rev-parse --short HEAD)
+version = $(tag)
 
 ifeq ($(env),dev)
 	image_tag = $(tag)-$(hash)
@@ -80,3 +81,9 @@ help/generate:
 	} \
 	{ lastLine = $$0 }' $(MAKE_FILES) | sort -u
 	@printf "\n\n"
+
+SHELL := /bin/bash
+
+upgrade:
+	gsed -i 's/$(version)/$(new_version)/g' swagger.yaml
+	gsed -i 's/$(version)/$(new_version)/g' helm/beanbot/Chart.yaml

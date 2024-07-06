@@ -6,7 +6,7 @@ metadata:
 spec:
   hosts:
   - "slack.aws.jalgraves.com"
-  - "slack.aws.beantownpub.com"
+  - "slack.{{ .Values.aws.regionCode }}.{{ .Values.environment }}.aws.beantownpub.com"
 
   gateways:
   - istio-system/web-gateway

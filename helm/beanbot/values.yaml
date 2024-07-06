@@ -1,4 +1,7 @@
 appName: beanbot
+aws:
+  regionCode: use2
+environment: production
 nameOverride:
 fullnameOverride:
 global:
@@ -19,7 +22,6 @@ logLevel: INFO
 database:
   enabled: false
 
-regionCode: use2
 replicaCount: 1
 resources:
   requests:

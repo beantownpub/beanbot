@@ -12,13 +12,15 @@ class TimeoffRequestException(Exception):
 
 
 class TimeoffRequestAPI(Resource):
-    success = "Request Received! We will respond to you as soon as we can. Thanks!"
-    failure = [
-        "Error Sending Request. Please try again."
-    ]
 
     def get(self):
         time_off_request = request.get_json()
         LOG.info(time_off_request)
-        version = {"app": "beanbot", "version": "0.1.0", "time_off_request": order}
+        version = {"app": "beanbot", "version": "0.1.1", "time_off_request": order}
+        return Response(version, mimetype="application/json", status=200)
+
+    def post(self):
+        time_off_request = request.get_json()
+        LOG.info(time_off_request)
+        version = {"app": "beanbot", "version": "0.1.1"}
         return Response(version, mimetype="application/json", status=200)

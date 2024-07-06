@@ -20,6 +20,6 @@ ENTRYPOINT ["/tini", "-s", "--"]
 
 WORKDIR /opt/app
 
-EXPOSE 5012
+EXPOSE 5007
 
-CMD ["gunicorn", "-w 1", "-b :5012", "server:APP"]
+CMD ["gunicorn", "-w 1", "-b :5007", "server:APP"]

@@ -70,7 +70,6 @@ def send_modal(trigger_id):
             "view": modal_view
         })
     )
-    if response.status_code == 200 and response.json().get('ok'):
-        LOG.info("Modal opened successfully!")
-    else:
-        LOG.info("Failed to open modal:", response.json())
+    LOG.info(dir(response))
+    LOG.info(f'Status code: {response.status_code} JSON: {response.json().get('ok')}')
+

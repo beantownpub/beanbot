@@ -4,7 +4,7 @@ import os
 from flask import Response, request
 from flask_restful import Resource
 from api.libs.logging import init_logger
-from api.libs.slack import send_modal
+from api.libs.slack_modal import send_modal
 
 LOG = init_logger(os.environ.get("LOG_LEVEL"))
 

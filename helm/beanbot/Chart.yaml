@@ -3,7 +3,7 @@ name: beanbot
 description: Beanbot deployment
 type: application
 version: 0.1.1
-appVersion: 0.1.5
+appVersion: 0.1.6
 sources:
 - https://github.com/beantownpub/beanbot
 

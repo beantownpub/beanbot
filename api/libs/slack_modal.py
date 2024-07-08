@@ -8,7 +8,7 @@ from .logging import init_logger
 LOG = init_logger(os.environ.get("LOG_LEVEL"))
 
 
-def make_modal(trigger_id):
+def build_modal(trigger_id):
     current_year = datetime.datetime.now().year
     current_month = datetime.datetime.now().month
 
@@ -72,7 +72,7 @@ def make_modal(trigger_id):
 def send_modal(trigger_id):
     LOG.info(f'Trigger ID: {trigger_id}')
     slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
-    modal_view = make_modal(trigger_id)
+    modal_view = build_modal(trigger_id)
     response = requests.post(
         'https://slack.com/api/views.open',
         headers={
@@ -82,6 +82,6 @@ def send_modal(trigger_id):
         data=json.dumps(modal_view)
     )
     is_json = response.json().get('ok')
-    LOG.info(response.content)
+    LOG.info('Modal Response: %s', response.content)
     LOG.info(f'Status code: {response.status_code} JSON: {is_json}')
 

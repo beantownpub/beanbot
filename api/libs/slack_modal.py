@@ -37,7 +37,7 @@ def make_modal():
                     "placeholder": {
                         "type": "plain_text",
                         "text": "Select a start date",
-                        "emoji": true
+                        "emoji": True
                     },
                     "action_id": "datepicker-start"
                 },
@@ -47,7 +47,7 @@ def make_modal():
                     "placeholder": {
                         "type": "plain_text",
                         "text": "Select an end date",
-                        "emoji": true
+                        "emoji": True
                     },
                     "action_id": "datepicker-end"
                 }

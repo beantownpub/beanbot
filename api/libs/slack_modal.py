@@ -58,6 +58,7 @@ def make_modal(trigger_id):
             ]
         }
     }
+    return modal_view
 
 # Make the request to open the modal
 def send_modal(trigger_id):
@@ -68,7 +69,7 @@ def send_modal(trigger_id):
         'https://slack.com/api/views.open',
         headers={
             'Authorization': f'Bearer {slack_bot_token}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json;charset=utf-8'
         },
         data=json.dumps(modal_view)
     )

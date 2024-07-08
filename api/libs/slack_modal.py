@@ -72,5 +72,7 @@ def send_modal(trigger_id):
     )
     is_json = response.json().get('ok')
     LOG.info(dir(response))
+    LOG.info(response.text)
+    LOG.info(response.content)
     LOG.info(f'Status code: {response.status_code} JSON: {is_json}')
 

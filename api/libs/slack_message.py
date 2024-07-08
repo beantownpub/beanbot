@@ -47,7 +47,7 @@ def build_message(channel_id, username, start_date, end_date=None):
                         "type": "button",
                         "text": {
                             "type": "plain_text",
-                            "emoji": true,
+                            "emoji": True,
                             "text": "Approve"
                         },
                         "style": "primary",
@@ -57,7 +57,7 @@ def build_message(channel_id, username, start_date, end_date=None):
                         "type": "button",
                         "text": {
                             "type": "plain_text",
-                            "emoji": true,
+                            "emoji": True,
                             "text": "Deny"
                         },
                         "style": "danger",

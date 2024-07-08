@@ -61,18 +61,19 @@ def make_modal(trigger_id):
 
 # Make the request to open the modal
 def send_modal(trigger_id):
+    LOG.info(f'Trigger ID: {trigger_id}')
     slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
     modal_view = make_modal(trigger_id)
     response = requests.post(
         'https://slack.com/api/views.open',
         headers={
             'Authorization': f'Bearer {slack_bot_token}',
-            'Content-Type': 'application/json;charset=utf-8'
+            'Content-Type': 'application/json'
         },
         data=json.dumps(modal_view)
     )
     is_json = response.json().get('ok')
-    LOG.info(dir(response))
+    LOG.info(modal_view)
     LOG.info(response.text)
     LOG.info(response.content)
     LOG.info(f'Status code: {response.status_code} JSON: {is_json}')

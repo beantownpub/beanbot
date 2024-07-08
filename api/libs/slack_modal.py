@@ -32,7 +32,7 @@ def make_modal(trigger_id):
                     "block_id": "start-date",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "Request some fuckin time off!"
+                        "text": "Select start date"
                     },
                     "accessory": {
                         "type": "datepicker",
@@ -43,6 +43,14 @@ def make_modal(trigger_id):
                             "emoji": True
                         },
                         "action_id": "datepicker-start"
+                    }
+                },
+                {
+                    "type": "section",
+                    "block_id": "end-date",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "End date"
                     },
                     "accessory": {
                         "type": "datepicker",
@@ -74,8 +82,6 @@ def send_modal(trigger_id):
         data=json.dumps(modal_view)
     )
     is_json = response.json().get('ok')
-    LOG.info(modal_view)
-    LOG.info(response.text)
     LOG.info(response.content)
     LOG.info(f'Status code: {response.status_code} JSON: {is_json}')
 

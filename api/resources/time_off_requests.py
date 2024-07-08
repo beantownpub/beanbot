@@ -16,6 +16,7 @@ class TimeoffRequestAPI(Resource):
 
     def post(self):
         payload = json.loads(request.form.get('payload'))
+        LOG.info(payload)
         trigger_id = payload['trigger_id']
         send_modal(trigger_id)
         return Response(status=200)

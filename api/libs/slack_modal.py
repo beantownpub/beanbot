@@ -70,6 +70,7 @@ def send_modal(trigger_id):
             "view": modal_view
         })
     )
+    is_json = response.json().get('ok')
     LOG.info(dir(response))
-    LOG.info(f'Status code: {response.status_code} JSON: {response.json().get('ok')}')
+    LOG.info(f'Status code: {response.status_code} JSON: {is_json}')
 

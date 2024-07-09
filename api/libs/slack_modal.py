@@ -9,8 +9,10 @@ LOG = init_logger(os.environ.get("LOG_LEVEL"))
 
 
 def build_modal(trigger_id):
-    current_year = datetime.datetime.now().year
-    current_month = datetime.datetime.now().month
+    current_time = datetime.datetime.now()
+    current_year = current_time.year
+    current_month = current_time.month
+    current_day  = current_time.day
 
     modal_view = {
         "response_action": "push",
@@ -36,7 +38,7 @@ def build_modal(trigger_id):
                     },
                     "accessory": {
                         "type": "datepicker",
-                        "initial_date": f"{current_year}-{current_month}-1",
+                        "initial_date": f"{current_year}-{current_month}-{current_day}",
                         "placeholder": {
                             "type": "plain_text",
                             "text": "Select a start date",
@@ -50,17 +52,31 @@ def build_modal(trigger_id):
                     "block_id": "end-date",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "End date"
+                        "text": "Select an  date"
                     },
                     "accessory": {
                         "type": "datepicker",
-                        "initial_date": f"{current_year}-{current_month}-1",
+                        "initial_date": f"{current_year}-{current_month}-{current_day}",
                         "placeholder": {
                             "type": "plain_text",
                             "text": "Select an end date",
                             "emoji": True
                         },
                         "action_id": "datepicker-end"
+                    }
+                },
+                {
+                    "type": "input",
+                    "block_id": "request-details",
+                    "element": {
+                        "type": "plain_text_input",
+                        "multiline": True,
+                        "action_id": "request-details"
+                    },
+                    "label": {
+                        "type": "plain_text",
+                        "text": "Reason Details",
+                        "emoji": True
                     }
                 }
             ]

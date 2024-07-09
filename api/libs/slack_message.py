@@ -2,6 +2,7 @@ import requests
 import json
 import os
 
+from datetime import datetime
 from .logging import init_logger
 
 LOG = init_logger(os.environ.get("LOG_LEVEL"))
@@ -9,12 +10,18 @@ LOG = init_logger(os.environ.get("LOG_LEVEL"))
 
 #CHANNEL_ID = 'C031R2FQ34M'
 
+def convert_date_to_words(raw_date):
+    date_object = datetime.strptime(raw_date, "%Y-%m-%d")
+    day_name = date_object.strftime("%a")
+    date_month_year = date_object.strftime("%B %d, %Y")
+    date_words = f"{day_name} {date_month_year}"
+    return date_words
+
+
 # Define the message payload
 def build_approval_message(channel_id, username, start_date, end_date=None):
-    if not end_date:
-        requested_dates = f"The requested date {start_date}"
-    else:
-        requested_dates = f"The requested are *{start_date}* to *{end_date}*"
+    start_date_words = convert_date_to_words(start_date)
+    end_date_words = convert_date_to_words(end_date)
     message_payload = {
         "channel": channel_id,
         "text": "Time off request",
@@ -32,11 +39,15 @@ def build_approval_message(channel_id, username, start_date, end_date=None):
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f"*Team member {username} has requested timeoff*"
+                        "text": f"*Team Member:*\n{username}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": requested_dates
+                        "text": f"*Start Date:*\n{start_date_words}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*End Date:*\n{end_date_words}"
                     }
                 ]
             },
@@ -51,7 +62,7 @@ def build_approval_message(channel_id, username, start_date, end_date=None):
                             "text": "Approve"
                         },
                         "style": "primary",
-                        "value": "time_off_approved"
+                        "value": "approved"
                     },
                     {
                         "type": "button",
@@ -61,7 +72,7 @@ def build_approval_message(channel_id, username, start_date, end_date=None):
                             "text": "Deny"
                         },
                         "style": "danger",
-                        "value": "time_off_denied"
+                        "value": "denied"
                     }
                 ]
             }
@@ -69,7 +80,13 @@ def build_approval_message(channel_id, username, start_date, end_date=None):
     }
     return message_payload
 
-def update_confirmation_message(channel_id, message_timestamp, username, approval_status):
+def update_confirmation_message(channel_id, message_timestamp, username, text, approval_status):
+    # start_date_words = convert_date_to_words(start_date)
+    # end_date_words = convert_date_to_words(end_date)
+    if approval_status == "approved":
+        emoji = "large_green_circle"
+    if approval_status == "denied":
+        emoji = "red_circle"
     message_payload = {
         "channel": channel_id,
         "ts": message_timestamp,
@@ -79,12 +96,20 @@ def update_confirmation_message(channel_id, message_timestamp, username, approva
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*The timeoff request for {username} has been {approval_status}*"
+                    "text": f":{emoji}: *This request has been {approval_status}*"
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": text
                 }
             }
         ]
     }
     url = 'https://slack.com/api/chat.update'
+    LOG.info('Update message: %s', message_payload)
     send_slack_request(url=url, message_payload=message_payload)
 
 # Define the URL for the Slack API
@@ -100,7 +125,7 @@ def send_slack_request(url, message_payload):
     slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
     # Define the headers
     headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json;charset=utf-8',
         'Authorization': f'Bearer {slack_bot_token}'
     }
 

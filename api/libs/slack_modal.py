@@ -34,7 +34,7 @@ def build_modal(trigger_id):
                     "block_id": "start-date",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "Select start date"
+                        "text": "*Select a start date*"
                     },
                     "accessory": {
                         "type": "datepicker",
@@ -52,7 +52,7 @@ def build_modal(trigger_id):
                     "block_id": "end-date",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "Select an  date"
+                        "text": "*Select an end date*"
                     },
                     "accessory": {
                         "type": "datepicker",

@@ -98,11 +98,11 @@ def build_approval_message(channel_id, username, start_date, details, end_date=N
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f"*Start Date:*\n{start_date_words}"
+                        "text": f"*Start Date:*\n*`{start_date_words}`*"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*End Date:*\n{end_date_words}"
+                        "text": f"*End Date:*\n*`{end_date_words}`*"
                     }
                 ]
             },

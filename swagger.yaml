@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 0.1.44
+  version: 0.1.45
   title: Beanbot
   description: An API for interacting with third party apps
 

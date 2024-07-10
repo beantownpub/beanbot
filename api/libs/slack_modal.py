@@ -75,7 +75,7 @@ def build_modal(trigger_id):
                     },
                     "label": {
                         "type": "plain_text",
-                        "text": "Reason Details",
+                        "text": "Request Details",
                         "emoji": True
                     }
                 }
@@ -84,9 +84,8 @@ def build_modal(trigger_id):
     }
     return modal_view
 
-# Make the request to open the modal
+
 def send_modal(trigger_id):
-    LOG.info(f'Trigger ID: {trigger_id}')
     slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
     modal_view = build_modal(trigger_id)
     response = requests.post(
@@ -97,7 +96,6 @@ def send_modal(trigger_id):
         },
         data=json.dumps(modal_view)
     )
-    is_json = response.json().get('ok')
-    LOG.info('Modal Response: %s', response.content)
-    LOG.info(f'Status code: {response.status_code} JSON: {is_json}')
+    #is_json = response.json().get('ok')
+    #LOG.info('Modal Response: %s', json.dumps(response.json(), indent=2))
 

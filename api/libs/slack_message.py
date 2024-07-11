@@ -47,11 +47,20 @@ def build_user_approval_status_message(user_id, approval_status, text):
         "text": "Time off request",
         "blocks": [
             {
+                "type": "header",
+                "block_id": "approval-status-header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Time Off Request",
+                    "emoji": True
+                }
+            },
+            {
                 "type": "section",
                 "block_id": "request-received",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f":{emoji}: *Your timeoff request has been {approval_status}*"
+                    "text": f":{emoji}: *Your request has been {approval_status}*"
                 }
             },
             {
@@ -67,81 +76,86 @@ def build_user_approval_status_message(user_id, approval_status, text):
     return message_payload
 
 
-def build_approval_message(channel_id, username, start_date, details, end_date=None):
+def build_approval_message(channel_id, username, position, start_date, details, end_date=None):
     start_date_words = convert_date_to_words(start_date)
     end_date_words = convert_date_to_words(end_date)
     message_payload = {
         "channel": channel_id,
         "text": "Time off request",
             "blocks": [
-            {
-                "type": "header",
-                "text": {
-                    "type": "plain_text",
-                    "text": "Time Off Request",
-                    "emoji": True
-                }
-            },
-            {
-                "type": "section",
-                "block_id": "username-field",
-                "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Team Member:*\n{username}"
+                {
+                    "type": "header",
+                    "block_id": "post-for-approval",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Time Off Request",
+                        "emoji": True
                     }
-                ]
-            },
-            {
-                "type": "section",
-                "block_id": "date-fields",
-                "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Start Date:*\n*`{start_date_words}`*"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*End Date:*\n*`{end_date_words}`*"
-                    }
-                ]
-            },
-            {
-                "type": "section",
-                "block_id": "request-details",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"*Request Details*:\n>{details}"
-                }
-            },
-            {
-                "type": "actions",
-                "block_id": "request-approval",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "emoji": True,
-                            "text": "Approve"
+                },
+                {
+                    "type": "section",
+                    "block_id": "username-field",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Team Member:*\n{username}"
                         },
-                        "style": "primary",
-                        "value": "approved"
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "emoji": True,
-                            "text": "Deny"
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Position:*\n{position}"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "block_id": "date-fields",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Start Date:*\n*`{start_date_words}`*"
                         },
-                        "style": "danger",
-                        "value": "denied"
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*End Date:*\n*`{end_date_words}`*"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "block_id": "request-details",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"*Request Details*:\n>{details}"
                     }
-                ]
-            }
-        ]
-    }
+                },
+                {
+                    "type": "actions",
+                    "block_id": "request-approval",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": "Approve"
+                            },
+                            "style": "primary",
+                            "value": "approved"
+                        },
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": "Deny"
+                            },
+                            "style": "danger",
+                            "value": "denied"
+                        }
+                    ]
+                }
+            ]
+        }
     return message_payload
 
 
@@ -155,6 +169,15 @@ def update_confirmation_message(channel_id, message_timestamp, username, text, a
         "ts": message_timestamp,
         "text": "Time off request",
         "blocks": [
+            {
+                "type": "header",
+                "block_id": "message-header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Time Off Request",
+                    "emoji": True
+                }
+            },
             {
                 "type": "section",
                 "block_id": "status-message",
@@ -191,10 +214,10 @@ def send_request_received_confirmation_to_user(user_id, start_date, end_date):
     send_slack_post_request(url=url, message_payload=message_payload)
 
 
-def send_for_approval_message(channel_id, username, details, start_date, end_date=None):
+def send_for_approval_message(channel_id, username, position, details, start_date, end_date=None):
     slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
     url = 'https://slack.com/api/chat.postMessage'
-    message_payload = build_approval_message(channel_id=channel_id, username=username, details=details, start_date=start_date, end_date=end_date)
+    message_payload = build_approval_message(channel_id=channel_id, username=username, position=position, details=details, start_date=start_date, end_date=end_date)
     send_slack_post_request(url=url, message_payload=message_payload)
 
 
